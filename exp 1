@@ -1,0 +1,38 @@
+# Install transformers (only needed the first time in Colab)
+!pip -q install transformers torch
+
+from transformers import pipeline, set_seed
+
+generator = pipeline("text-generation", model="gpt2")
+set_seed(42)
+
+prompt = "Artificial Intelligence will transform the future of"
+
+outputs = generator(
+    prompt,
+    max_new_tokens=40,   # Generates 40 new tokens
+    num_return_sequences=2,
+    temperature=0.8,
+    top_k=50,
+    top_p=0.95,
+    do_sample=True,
+    truncation=True
+)
+
+for i, out in enumerate(outputs, start=1):
+    print(f"--- Generated Text {i} ---")
+    print(out["generated_text"])
+    print()
+
+
+
+Loading weights: 100%
+ 148/148 [00:00<00:00, 3129.59it/s]
+[transformers] Both `max_new_tokens` (=40) and `max_length`(=50) seem to have been set. `max_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
+--- Generated Text 1 ---
+Artificial Intelligence will transform the future of data into a powerful tool for the future of humanity. The "Deep Learning" of Machine Learning and Artificial Intelligence will bring about the transformation of the world.
+
+The Deep Learning of Machine Learning and
+
+--- Generated Text 2 ---
+Artificial Intelligence will transform the future of our work. With AI, we may be able to do things that other people aren't able to. You can't have it all, but you can create artificial intelligence that does things we don't
