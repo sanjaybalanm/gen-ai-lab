@@ -1,0 +1,102 @@
+# Install transformers (only needed the first time in Colab)
+!pip -q install transformers torch
+
+from transformers import pipeline
+
+# Load GPT-2 model
+generator = pipeline("text-generation", model="gpt2")
+
+# 1. Zero-shot prompt
+zero_shot_prompt = (
+    "Classify the sentiment of this review as Positive or Negative: "
+    "'The product quality is excellent!'\n"
+    "Sentiment:"
+)
+
+# 2. Few-shot prompt
+few_shot_prompt = """
+Review: 'I loved this movie, it was fantastic.'
+Sentiment: Positive
+
+Review: 'The service was slow and disappointing.'
+Sentiment: Negative
+
+Review: 'The product quality is excellent!'
+Sentiment:
+"""
+
+# 3. Chain-of-Thought prompt
+cot_prompt = """
+Q: A shop had 15 apples. It sold 6 and then received 10 more. How many apples now?
+A: Let's think step by step. 15 - 6 = 9. 9 + 10 = 19. The answer is 19.
+
+Q: A library had 120 books. It lent out 45 and bought 30 new books. How many books now?
+A: Let's think step by step.
+"""
+
+# Generate outputs
+prompts = [
+    ("Zero-shot", zero_shot_prompt),
+    ("Few-shot", few_shot_prompt),
+    ("Chain-of-Thought", cot_prompt)
+]
+
+for name, prompt in prompts:
+    output = generator(
+        prompt,
+        max_new_tokens=40,
+        num_return_sequences=1,
+        do_sample=False
+    )
+
+    print(f"=== {name} ===")
+    print(output[0]["generated_text"])
+    print()
+
+
+
+
+
+ Loading weights: 100% 148/148 [00:00<00:00, 1496.96it/s][transformers] Both `max_new_tokens` (=40) and `max_length`(=50) seem to have been set. `max_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
+[transformers] Both `max_new_tokens` (=40) and `max_length`(=50) seem to have been set. `max_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
+=== Zero-shot ===
+Classify the sentiment of this review as Positive or Negative: 'The product quality is excellent!'
+Sentiment: 'The product quality is excellent!'
+The product is great. I bought this product because I wanted to try it out. I have been using it for a few months now and it is a great
+
+[transformers] Both `max_new_tokens` (=40) and `max_length`(=50) seem to have been set. `max_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
+=== Few-shot ===
+
+Review: 'I loved this movie, it was fantastic.'
+Sentiment: Positive
+
+Review: 'The service was slow and disappointing.'
+Sentiment: Negative
+
+Review: 'The product quality is excellent!'
+Sentiment:
+
+Review: 'The movie was a great experience.'
+
+Sentiment:
+
+Review: 'The movie was a great experience.'
+
+Sentiment:
+
+Review: 'The movie
+
+=== Chain-of-Thought ===
+
+Q: A shop had 15 apples. It sold 6 and then received 10 more. How many apples now?
+A: Let's think step by step. 15 - 6 = 9. 9 + 10 = 19. The answer is 19.
+
+Q: A library had 120 books. It lent out 45 and bought 30 new books. How many books now?
+A: Let's think step by step.
+
+Q: A store had 100 books. It lent out 50 and bought 50 new books. How many books now?
+
+A: Let's think step by step.
+
+Q: A
+
